@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36705.20 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NginxBasicProject", "NginxBasicProject\NginxBasicProject.csproj", "{2337F650-F97B-4C5B-95E5-579200125BE3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2337F650-F97B-4C5B-95E5-579200125BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2337F650-F97B-4C5B-95E5-579200125BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2337F650-F97B-4C5B-95E5-579200125BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2337F650-F97B-4C5B-95E5-579200125BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C9537309-1849-4B70-BE84-4A48F00160B2}
+	EndGlobalSection
+EndGlobal
