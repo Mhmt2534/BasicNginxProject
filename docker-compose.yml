@@ -5,11 +5,12 @@ services:
     build:
       context: .
       dockerfile: NginxBasicProject/Dockerfile
-    container_name: nginxbasic_api
     expose:
       - "8080"
     networks:
       - backend
+    deploy:
+      replicas: 2
 
   nginx:
     image: nginx:alpine
