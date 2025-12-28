@@ -43,6 +43,18 @@ http://localhost/whoami
 docker compose up --build
 ```
 
+### ⚠️ Important: Scaling Containers
+
+Docker Compose may not always support `replicas` depending on the Docker version
+or the Compose implementation being used.
+
+If multiple backend instances do not start correctly, use the following
+**guaranteed approach**:
+
+```bash
+docker compose up --build --scale api=2
+```
+
 ### Purpose
 
 * Learn Nginx reverse proxy basics
@@ -91,6 +103,18 @@ http://localhost/whoami
 
 ```bash
 docker compose up --build
+```
+
+### ⚠️ Önemli: Container Ölçeklendirme (Scaling)
+
+Docker Compose, kullanılan sürüme veya çalıştırma şekline bağlı olarak
+`replicas` özelliğini her zaman desteklemeyebilir.
+
+Eğer birden fazla backend instance çalışmazsa, aşağıdaki yöntem
+**garantili bir çözümdür**:
+
+```bash
+docker compose up --build --scale api=2
 ```
 
 ### Amaç
