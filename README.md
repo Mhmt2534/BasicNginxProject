@@ -37,6 +37,23 @@ http://localhost/whoami
 * Containers communicate via Docker bridge network
 * Nginx connects using the **service name (`api`)**
 
+### Passive Health Check & Failover
+
+Nginx is configured with **passive health checks** using the `upstream` directive.
+
+If one API instance becomes unreachable:
+- Nginx detects the failure during request handling
+- After a defined number of failures (`max_fails`)
+- The unhealthy instance is temporarily removed from the upstream pool (`fail_timeout`)
+- Traffic is automatically routed to the remaining healthy instance
+
+This behavior can be tested by stopping one API container manually and observing
+that requests continue to succeed without downtime.
+
+> Note: This project uses passive health checks for learning purposes.
+> Active health checks require Nginx Plus or an external orchestration platform
+> such as Kubernetes.
+
 ### Run
 
 ```bash
@@ -86,6 +103,22 @@ http://localhost/whoami
 * .NET API → 8080
 * Servisler Docker bridge network üzerinden haberleşir
 * Nginx, backend’e **service name (`api`)** ile bağlanır
+
+### Passive Health Check & Failover
+
+Bu projede Nginx, **passive health check** mekanizması ile yapılandırılmıştır.
+
+Bir API instance’ı erişilemez hale geldiğinde:
+- Nginx, isteğe cevap alamadığı backend’i tespit eder
+- Belirlenen hata sayısından sonra (`max_fails`)
+- Bu instance geçici olarak trafikten çıkarılır (`fail_timeout`)
+- İstekler otomatik olarak sağlıklı instance’a yönlendirilir
+
+Bu davranış, bir API container’ı manuel olarak durdurularak test edilebilir.
+Sistem kesintiye uğramadan çalışmaya devam eder.
+
+> Not: Bu proje öğrenme amaçlıdır ve passive health check kullanır.
+> Active health check için Nginx Plus veya Kubernetes gibi çözümler gereklidir.
 
 ### Çalıştırma
 
