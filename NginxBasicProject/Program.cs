@@ -21,5 +21,7 @@ app.MapGet("/whoami", () =>
     return Results.Ok($"Hello from {machineName}");
 });
 
+app.MapGet("/health", () => Results.Ok("OK"));
+
 
 app.Run();
