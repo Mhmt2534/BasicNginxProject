@@ -12,7 +12,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 
 app.MapGet("/whoami", () =>
@@ -23,5 +23,13 @@ app.MapGet("/whoami", () =>
 
 app.MapGet("/health", () => Results.Ok("OK"));
 
+app.MapGet("/scheme", (HttpContext ctx) =>
+{
+    return Results.Ok(new
+    {
+        Scheme = ctx.Request.Scheme,
+        ForwardedProto = ctx.Request.Headers["X-Forwarded-Proto"].ToString()
+    });
+});
 
 app.Run();
