@@ -11,31 +11,58 @@ This project is a **learning-focused example** demonstrating how to use **Nginx 
 * .NET 9 Minimal API
 * Nginx (Alpine)
 * Docker & Docker Compose
+* OpenSSL (for generating self-signed certificates)
+
+### 🔐 SSL/HTTPS Setup (Required)
+
+Before running the project, you need to generate a self-signed certificate. Nginx needs these files to serve traffic over HTTPS.
+
+Run the following command in the root of the project to create a `certs` folder and generate the keys:
+
+```bash
+mkdir -p certs
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout certs/nginx.key \
+  -out certs/nginx.crt \
+  -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
+```
+
+>Note: Since this is a self-signed certificate, your browser will show a "Not Secure" warning. You must manually accept the risk (e.g., click "Advanced" -> "Proceed to localhost") to test the site.
+
 
 ### API Endpoint
+
+**1. Standard Identity Check:**
 
 ```http
 GET /whoami
 ```
+* Via HTTP: http://localhost/whoami (Redirects to HTTPS)
+* Via HTTPS: https://localhost/whoami
 
-Response:
+**2. Scheme Check (SSL Verification):**
+This endpoint helps verify that Nginx is correctly passing the X-Forwarded-Proto header to the backend.
 
+```http
+GET /scheme
 ```
-Hello from API
-```
+* Test URL: https://localhost/scheme
+* Expected Response: https (Even though the internal traffic is HTTP, the app knows the original request was secure).
 
-Accessed via Nginx:
 
-```
-http://localhost/whoami
-```
 
-### Architecture
+### Architecture & SSL Termination
 
-* Nginx listens on port 80
-* .NET API runs on port 8080
-* Containers communicate via Docker bridge network
-* Nginx connects using the **service name (`api`)**
+* **Nginx (Public Facing):**
+  * Listens on **Port 80** (HTTP) → Redirects to HTTPS.
+  * Listens on **Port 443** (HTTPS) → Decrypts the SSL traffic (**SSL Termination**).
+
+* **.NET API (Internal):**
+  * Runs on **Port 8080** (HTTP).
+
+* **Communication:**
+  * Nginx talks to the .NET API over plain **HTTP** within the secure Docker bridge network.
+  * Nginx connects using the **service name** (`api`).
 
 ### Passive Health Check & Failover
 
@@ -91,48 +118,55 @@ Nginx, Docker üzerinde çalışan bir **.NET Minimal API**’ye **reverse proxy
 - .NET 9 Minimal API
 - Nginx (Alpine)
 - Docker & Docker Compose
+- OpenSSL (Self-signed sertifika oluşturmak için)
 
-### API Endpoint
-```http
-GET /whoami
-````
+### 🔐 SSL/HTTPS Setup (Required)
 
-Yanıt:
+Projeyi çalıştırmadan önce bir self-signed (kendinden imzalı) sertifika oluşturmanız gerekir. Nginx'in HTTPS üzerinden hizmet verebilmesi için bu dosyalara ihtiyacı vardır.
 
-```
-Hello from API
-```
+certs klasörü oluşturmak ve anahtarları üretmek için projenin ana dizininde şu komutu çalıştırın:
 
-Endpoint, Nginx üzerinden erişilir:
-
-```
-http://localhost/whoami
+```bash
+mkdir -p certs
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout certs/nginx.key \
+  -out certs/nginx.crt \
+  -subj "/C=TR/ST=Istanbul/L=Istanbul/O=Organization/CN=localhost"
 ```
 
-### Mimari
+>Not: Bu sertifika resmi bir otorite tarafından imzalanmadığı için, tarayıcınız "Güvenli Değil" uyarısı verecektir. Test etmek için "Gelişmiş" -> "localhost sitesine ilerle" (veya "Riski kabul et") seçeneklerini kullanmalısınız.
 
-* Nginx → 80
-* .NET API → 8080
-* Servisler Docker bridge network üzerinden haberleşir
-* Nginx, backend’e **service name (`api`)** ile bağlanır
+
+### Mimari ve SSL Termination
+
+* **Nginx (Dışa Açık):**
+  * **Port 80** (HTTP) dinler → HTTPS'e yönlendirir.
+  * **Port 443** (HTTPS) dinler → Şifreli trafiği çözer (**SSL Termination**).
+
+* **.NET API (Dahili):**
+  * **Port 8080** (HTTP) üzerinde çalışır.
+
+* **İletişim:**
+  * Nginx, şifresi çözülmüş trafiği güvenli Docker bridge ağı üzerinden **HTTP** protokolü ile .NET API'ye iletir.
+  * Nginx, backend’e **service name** (`api`) ile bağlanır.
 
 ### Passive Health Check & Failover
 
 Bu projede Nginx, **passive health check** mekanizması ile yapılandırılmıştır.
 
 Bir API instance’ı erişilemez hale geldiğinde:
-- Nginx, isteğe cevap alamadığı backend’i tespit eder
-- Belirlenen hata sayısından sonra (`max_fails`)
+- Nginx, isteğe cevap alamadığı backend’i tespit eder.
+- Belirlenen hata sayısından sonra (`max_fails`).
 - Bu instance geçici olarak trafikten çıkarılır (`fail_timeout`)
-- İstekler otomatik olarak sağlıklı instance’a yönlendirilir
+- İstekler otomatik olarak sağlıklı instance’a yönlendirilir.
 
-Bu davranış, bir API container’ı manuel olarak durdurularak test edilebilir.
-Sistem kesintiye uğramadan çalışmaya devam eder.
-
-> Not: Bu proje öğrenme amaçlıdır ve passive health check kullanır.
-> Active health check için Nginx Plus veya Kubernetes gibi çözümler gereklidir.
+> Note: This project uses passive health checks for learning purposes.
+> Active health checks require Nginx Plus or an external orchestration platform
+> such as Kubernetes.
 
 ### Çalıştırma
+
+Önce sertifikaları oluşturduğunuzdan emin olun!
 
 ```bash
 docker compose up --build
@@ -153,6 +187,7 @@ docker compose up --build --scale api=2
 ### Amaç
 
 * Nginx reverse proxy mantığını öğrenmek
+* SSL Termination ve sertifika yönetimini anlamak.
 * Docker container networking’i anlamak
 * Load balancing öncesi temel oluşturmak
 
