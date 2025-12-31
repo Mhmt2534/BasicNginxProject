@@ -1,0 +1,4 @@
+* text=auto
+
+*.crt text eol=lf
+*.key text eol=lf

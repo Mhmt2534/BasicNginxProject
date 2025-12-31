@@ -14,3 +14,9 @@ obj/
 # OS junk
 .DS_Store
 Thumbs.db
+
+
+# SSL private keys
+*.key
+nginx/certs/*.key
+nginx/certs/*.crt
